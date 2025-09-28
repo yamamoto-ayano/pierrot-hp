@@ -1,6 +1,5 @@
 // 環境設定
-if (typeof CONFIG === 'undefined') {
-    var CONFIG = {
+window.CONFIG = window.CONFIG || {
     // Google Sheets設定
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
@@ -30,11 +29,15 @@ if (typeof CONFIG === 'undefined') {
     DEBUG: true
 };
 
-    // 環境変数から設定を読み込み（本番環境用）
-    if (typeof process !== 'undefined' && process.env) {
-        CONFIG.GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL || CONFIG.GOOGLE_SHEETS_URL;
-        CONFIG.GOOGLE_DRIVE_BASE_URL = process.env.GOOGLE_DRIVE_BASE_URL || CONFIG.GOOGLE_DRIVE_BASE_URL;
-        CONFIG.APP_NAME = process.env.APP_NAME || CONFIG.APP_NAME;
-        CONFIG.DEBUG = process.env.DEBUG === 'true' || CONFIG.DEBUG;
-    }
+// 環境変数から設定を読み込み（本番環境用）
+if (typeof process !== 'undefined' && process.env) {
+    window.CONFIG.GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL || window.CONFIG.GOOGLE_SHEETS_URL;
+    window.CONFIG.GOOGLE_DRIVE_BASE_URL = process.env.GOOGLE_DRIVE_BASE_URL || window.CONFIG.GOOGLE_DRIVE_BASE_URL;
+    window.CONFIG.APP_NAME = process.env.APP_NAME || window.CONFIG.APP_NAME;
+    window.CONFIG.DEBUG = process.env.DEBUG === 'true' || window.CONFIG.DEBUG;
+}
+
+// 後方互換性のため、CONFIGも定義
+if (typeof CONFIG === 'undefined') {
+    window.CONFIG = window.CONFIG;
 }

@@ -12,15 +12,15 @@ class ProductManager {
         const now = Date.now();
         
         // キャッシュチェック
-        if (now - this.lastFetch < CONFIG.CACHE_DURATION && this.products.length > 0) {
-            if (CONFIG.DEBUG) console.log('Using cached products');
+        if (now - this.lastFetch < window.CONFIG.CACHE_DURATION && this.products.length > 0) {
+            if (window.CONFIG.DEBUG) console.log('Using cached products');
             return this.products;
         }
 
         try {
-            if (CONFIG.DEBUG) console.log('Fetching products from Google Sheets...');
+            if (window.CONFIG.DEBUG) console.log('Fetching products from Google Sheets...');
             
-            const response = await fetch(CONFIG.GOOGLE_SHEETS_URL);
+            const response = await fetch(window.CONFIG.GOOGLE_SHEETS_URL);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -32,7 +32,7 @@ class ProductManager {
             this.categories = new Set(products.map(p => p.category));
             this.lastFetch = now;
             
-            if (CONFIG.DEBUG) console.log(`Loaded ${products.length} products`);
+            if (window.CONFIG.DEBUG) console.log(`Loaded ${products.length} products`);
             return products;
             
         } catch (error) {
@@ -103,7 +103,7 @@ class ProductManager {
 
     // Google Drive画像URLを生成
     getDriveImageUrl(fileId) {
-        return `${CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
+        return `${window.CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
     }
 
     // カテゴリ別に商品を取得
@@ -138,7 +138,7 @@ class ProductManager {
     }
 
     // 商品をページネーションで取得
-    getProductsPage(page = 1, pageSize = CONFIG.PRODUCTS_PER_PAGE) {
+    getProductsPage(page = 1, pageSize = window.CONFIG.PRODUCTS_PER_PAGE) {
         const startIndex = (page - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         return this.products.slice(startIndex, endIndex);

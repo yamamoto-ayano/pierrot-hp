@@ -344,6 +344,7 @@ body {
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.3s ease;
+    cursor: pointer;
 }
 
 .product-number:hover {
@@ -489,6 +490,123 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
+/* ローディング・エラー表示 */
+.loading {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.no-products {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #999;
+}
+
+.error {
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.2rem;
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 10px;
+    margin: 2rem 0;
+}
+
+/* 商品モーダル */
+.product-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.product-detail {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.product-image {
+    flex: 0 0 200px;
+}
+
+.product-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.product-sku,
+.product-category,
+.product-price,
+.product-updated {
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+.product-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #947962;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #947962;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #7a6351;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #e0e0e0;
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
     .nav-menu {
@@ -551,6 +669,19 @@ body {
         gap: 2rem;
     }
 
+    .product-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        min-width: auto;
+    }
+
+    .filter-controls {
+        justify-content: center;
+    }
+
     .footer-content {
         grid-template-columns: 1fr;
         text-align: center;
@@ -572,6 +703,15 @@ body {
     .floating-btn {
         width: 45px;
         height: 45px;
+    }
+
+    .product-detail {
+        flex-direction: column;
+    }
+
+    .product-image {
+        flex: none;
+        text-align: center;
     }
 }
 

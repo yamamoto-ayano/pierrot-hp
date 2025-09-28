@@ -3,7 +3,9 @@ const CONFIG = {
     // Google Sheets設定
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
-    // Google Drive設定（複数のURL形式を試す）
+    // Google Drive設定
+    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
+    // 複数のURL形式を試す（将来の拡張用）
     GOOGLE_DRIVE_URLS: [
         'https://drive.google.com/uc?export=view&id=',  // 直接表示用
         'https://drive.google.com/thumbnail?id=',       // サムネイル用

@@ -132,7 +132,7 @@ class ProductDisplay {
                          class="product-card-image"
                          loading="lazy"
                          data-fallback-urls='${JSON.stringify(allImageUrls)}'
-                         onerror="this.onerror=null; this.tryNextImage(this);">
+                         onerror="this.onerror=null; window.tryNextImage(this);">
                 </div>
                 <div class="product-card-content">
                     <h3 class="product-card-title">${product.name}</h3>
@@ -285,7 +285,10 @@ class ProductDisplay {
                 <div class="product-detail">
                     ${product.imageUrl ? `
                         <div class="product-image">
-                            <img src="${product.imageUrl}" alt="${formattedProduct.displayName}" loading="lazy">
+                            <img src="${product.imageUrl}" 
+                                 alt="${formattedProduct.displayName}" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='${window.CONFIG.FALLBACK_IMAGE_URL}';">
                         </div>
                     ` : ''}
                     <div class="product-info">

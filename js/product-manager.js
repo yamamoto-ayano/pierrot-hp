@@ -43,68 +43,39 @@ class ProductManager {
 
     // CSVをパースして商品データに変換
     parseCSV(csvText) {
-        try {
-            const lines = csvText.split('\n');
-            if (lines.length < 2) {
-                if (CONFIG.DEBUG) console.warn('CSV has no data rows');
-                return [];
+        const lines = csvText.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        const products = [];
+
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            const values = this.parseCSVLine(line);
+            if (values.length < headers.length) continue;
+
+            const product = {};
+            headers.forEach((header, index) => {
+                product[header] = values[index] ? values[index].trim() : '';
+            });
+
+            // 空の商品はスキップ
+            if (!product.sku || !product.category) continue;
+
+            // 価格を数値に変換
+            if (product.price) {
+                product.price = parseInt(product.price) || 0;
             }
 
-            const headers = lines[0].split(',').map(h => h.trim());
-            const products = [];
-
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-
-                try {
-                    const values = this.parseCSVLine(line);
-                    if (values.length < headers.length) {
-                        if (CONFIG.DEBUG) console.warn(`Skipping line ${i + 1}: insufficient columns`);
-                        continue;
-                    }
-
-                    const product = {};
-                    headers.forEach((header, index) => {
-                        product[header] = values[index] ? values[index].trim() : '';
-                    });
-
-                    // 空の商品はスキップ
-                    if (!product.sku || !product.category) {
-                        if (CONFIG.DEBUG) console.warn(`Skipping product: missing SKU or category`);
-                        continue;
-                    }
-
-                    // 価格を数値に変換
-                    if (product.price) {
-                        product.price = parseInt(product.price) || 0;
-                    }
-
-                    // 画像URLを生成
-                    if (product.image_file_ids && product.image_file_ids.trim() !== '') {
-                        try {
-                            product.imageUrl = this.getDriveImageUrl(product.image_file_ids);
-                        } catch (error) {
-                            if (CONFIG.DEBUG) console.warn('Error generating image URL for product:', product.sku, error);
-                            product.imageUrl = CONFIG.FALLBACK_IMAGE_URL;
-                        }
-                    } else {
-                        product.imageUrl = CONFIG.FALLBACK_IMAGE_URL;
-                    }
-
-                    products.push(product);
-                } catch (error) {
-                    if (CONFIG.DEBUG) console.warn(`Error parsing line ${i + 1}:`, error);
-                    continue;
-                }
+            // 画像URLを生成
+            if (product.image_file_ids) {
+                product.imageUrl = this.getDriveImageUrl(product.image_file_ids);
             }
 
-            if (CONFIG.DEBUG) console.log(`Successfully parsed ${products.length} products`);
-            return products;
-        } catch (error) {
-            console.error('Error parsing CSV:', error);
-            return [];
+            products.push(product);
         }
+
+        return products;
     }
 
     // CSV行を正しくパース（カンマ区切りを考慮）
@@ -132,24 +103,7 @@ class ProductManager {
 
     // Google Drive画像URLを生成
     getDriveImageUrl(fileId) {
-        if (!fileId || fileId.trim() === '') {
-            if (CONFIG.DEBUG) console.warn('Empty file ID provided');
-            return CONFIG.FALLBACK_IMAGE_URL;
-        }
-        
-        // 安全な方法でURLを生成
-        const baseUrl = CONFIG.GOOGLE_DRIVE_BASE_URL || 
-                       (CONFIG.GOOGLE_DRIVE_URLS && CONFIG.GOOGLE_DRIVE_URLS[0]) || 
-                       'https://drive.google.com/uc?export=view&id=';
-        
-        const imageUrl = `${baseUrl}${fileId}`;
-        if (CONFIG.DEBUG) console.log(`Generated image URL for file ID ${fileId}:`, imageUrl);
-        return imageUrl;
-    }
-    
-    // 代替画像URLを取得（画像読み込み失敗時用）
-    getFallbackImageUrl() {
-        return CONFIG.FALLBACK_IMAGE_URL;
+        return `${CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
     }
 
     // カテゴリ別に商品を取得

@@ -1,167 +1,172 @@
-# Pierrot - レディースファッションSHOP
+# Pierrot ファッションショップ
 
-![Pierrot Logo](images/Image_001.png)
-
-## 📖 プロジェクト概要
-
-Pierrot（ピエロ）は、上質で洗練されたレディースファッションを提供するオンラインショップのWebサイトです。美しいデザインと使いやすいインターフェースで、お客様に最高のショッピング体験をお届けします。
-
-## ✨ 特徴
-
-* 🎨 **美しいデザイン**: 優雅で洗練されたUI/UX
-* 📱 **レスポンシブ対応**: モバイル・タブレット・デスクトップ対応
-* ⚡ **高速表示**: 最適化されたパフォーマンス
-* 🎯 **ユーザビリティ**: 直感的で使いやすいインターフェース
-* 🌸 **ブランドアイデンティティ**: レディースファッションに特化したデザイン
-* 📊 **Google Sheets連携**: 商品データをスプレッドシートで管理
-* 🖼️ **Google Drive画像**: 商品画像をGoogle Driveで管理
-
-## 🛠️ 技術スタック
-
-* **HTML5**: セマンティックなマークアップ
-* **CSS3**: モダンなスタイリング（Flexbox, Grid, アニメーション）
-* **JavaScript (ES6+)**: インタラクティブな機能
-* **Google Fonts**: 美しい日本語フォント
-* **Google Sheets API**: 商品データ管理
-* **Google Drive API**: 画像管理
+Pierrot ファッションショップの公式ウェブサイトです。Google SheetsとGoogle Driveを活用した商品管理システムを採用しています。
 
 ## 🚀 機能
 
-### メイン機能
+- **レスポンシブデザイン**: デスクトップ、タブレット、スマートフォンに対応
+- **動的商品管理**: Google Sheetsから商品データを自動取得
+- **画像管理**: Google Driveから商品画像を動的表示
+- **検索・フィルタリング**: 商品名、カテゴリ、価格での検索・絞り込み
+- **商品詳細モーダル**: クリックで詳細情報を表示
+- **ページネーション**: 大量の商品を効率的に表示
+- **ビュー切り替え**: グリッド表示・リスト表示の切り替え
+- **エラーハンドリング**: 堅牢なエラー処理とフォールバック機能
 
-* スムーズスクロールナビゲーション
-* 動的商品カタログの表示（Google Sheets連携）
-* 商品詳細モーダル
-* レスポンシブデザイン
-* 商品検索・フィルタ機能
-* カテゴリ別表示
-* 価格表示
+## 🛠 技術スタック
 
-### インタラクティブ機能
-
-* モバイルハンバーガーメニュー
-* フローティングボタン（メニュー、おすすめ、テキストサイズ変更）
-* タッチジェスチャー対応（スワイプナビゲーション）
-* 商品番号クリック時の詳細表示
-* リアルタイム検索
-* ソート機能
+- **フロントエンド**: HTML5, CSS3, JavaScript (ES6+)
+- **データ管理**: Google Sheets API (CSV)
+- **画像管理**: Google Drive API
+- **デプロイ**: GitHub Pages
+- **パフォーマンス**: キャッシュ、遅延読み込み、デバウンス
 
 ## 📁 プロジェクト構造
 
 ```
 pierrot-hp/
-├── index.html              # メインHTMLファイル
-├── config.js               # 環境設定ファイル
-├── product-manager.js      # 商品管理クラス
-├── product-display.js      # 商品表示クラス
+├── index.html              # メインページ
 ├── css/
-│   └── styles.css          # CSSスタイルシート
+│   └── styles.css          # スタイルシート
 ├── js/
-│   └── script.js           # JavaScript機能
-├── images/                 # メイン画像
-│   ├── Image_001.png       # ヒーロー画像
-│   └── Image_002.png       # 装飾画像
-└── README.md               # プロジェクト説明
+│   ├── config.js           # 設定管理
+│   ├── utils.js            # ユーティリティ関数
+│   ├── error-handler.js    # エラーハンドリング
+│   ├── debug.js            # デバッグ機能
+│   ├── product-manager.js  # 商品データ管理
+│   ├── product-display.js  # 商品表示管理
+│   └── script.js           # メインスクリプト
+└── README.md
 ```
 
-## 🎨 デザインコンセプト
+## ⚙️ 設定
 
-### カラーパレット
+### 環境変数
 
-* **プライマリ**: #947962 (優雅なブラウン)
-* **セカンダリ**: #F8E8E4 (ソフトピンク)
-* **アクセント**: #B8A082 (ゴールドブラウン)
+以下の環境変数で設定をカスタマイズできます：
 
-### タイポグラフィ
+```bash
+GOOGLE_SHEETS_URL=https://docs.google.com/spreadsheets/...
+GOOGLE_DRIVE_BASE_URL=https://drive.google.com/uc?export=view&id=
+APP_NAME=Pierrot
+DEBUG=false
+```
 
-* **見出し**: Noto Serif JP (明朝体)
-* **本文**: Noto Sans JP (ゴシック体)
+### デバッグモード
 
-## 🚀 セットアップ
+URLパラメータでデバッグモードを有効化：
+
+```
+https://your-site.com?debug=true
+```
+
+## 🔧 開発
+
+### ローカル開発
 
 1. リポジトリをクローン
-
 ```bash
 git clone https://github.com/yamamoto-ayano/pierrot-hp.git
 cd pierrot-hp
 ```
 
-2. ローカルサーバーで実行
-
+2. ローカルサーバーを起動
 ```bash
-# Python 3の場合
+# Python 3
 python -m http.server 8000
 
-# Node.jsの場合
-npx serve .
+# Node.js (http-server)
+npx http-server
 
-# または、Live Server拡張機能を使用
+# VS Code Live Server
+# Live Server拡張機能を使用
 ```
 
-3. ブラウザで `http://localhost:8000` にアクセス
+3. ブラウザでアクセス
+```
+http://localhost:8000
+```
 
-## 🌐 デプロイ
+### デバッグ機能
 
-このプロジェクトはGitHub Pagesでデプロイされています。
+ブラウザのコンソールで以下のコマンドが使用できます：
 
-**ライブサイト**: [https://yamamoto-ayano.github.io/pierrot-hp/](https://yamamoto-ayano.github.io/pierrot-hp/)
+```javascript
+// 画像URLテスト
+debug.testImage('1MGo1a7MCO6bR_ZtgKLVQRraEigizPxro');
 
-### GitHub Pages設定
+// デバッグ情報表示
+debug.showInfo();
 
-1. リポジトリの「Settings」タブに移動
-2. 左サイドバーの「Pages」をクリック
-3. 「Source」で「Deploy from a branch」を選択
-4. 「Branch」で「main」を選択
-5. 「Save」をクリック
+// ログ取得
+debug.getLogs();
 
-## 📊 商品管理
+// ログエクスポート
+debug.exportLogs();
+```
 
-### Google Sheets連携
+## 📊 データ管理
 
-商品データはGoogle Sheetsで管理されています：
+### Google Sheets設定
 
-- **スプレッドシートURL**: [商品データ](https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv)
-- **画像管理**: Google Driveで管理
-- **リアルタイム更新**: スプレッドシートの変更が自動反映
+商品データは以下の形式でGoogle Sheetsに保存：
 
-### 商品データ構造
+| 列名 | 説明 | 例 |
+|------|------|-----|
+| category | カテゴリコード | A, B, C... |
+| sku | 商品コード | a1, a2, a3... |
+| name | 商品名 | 綿混ボリュームスリーブニット |
+| price | 価格 | 3790 |
+| image_file_ids | Google DriveファイルID | 1MGo1a7MCO6bR_ZtgKLVQRraEigizPxro |
+| last_updated | 最終更新日時 | 2025-09-28T05:25:00.000Z |
 
-| カラム名 | 説明 | 例 |
-|---------|------|-----|
-| category | カテゴリ | A, B, C... |
-| sku | 商品コード | 1a, 2a, 3a... |
-| name | 商品名 | 商品名 |
-| price | 価格 | 5000 |
-| image_file_ids | Google Drive画像ID | 1ABC123... |
-| last_updated | 最終更新日 | 2024-01-01 |
+### Google Drive設定
 
-## 📱 対応デバイス
+1. 商品画像をGoogle Driveにアップロード
+2. 画像の共有設定を「リンクを知っている全員が閲覧可能」に設定
+3. ファイルIDをGoogle Sheetsの`image_file_ids`列に記入
 
-* **デスクトップ**: 1200px以上
-* **タブレット**: 768px - 1199px
-* **モバイル**: 767px以下
+## 🚀 デプロイ
 
-## 🎯 今後の予定
+GitHub Pagesを使用して自動デプロイ：
 
-* ショッピングカート機能
-* ユーザーアカウント機能
-* 決済システム連携
-* 多言語対応
-* 商品レビュー機能
-* お気に入り機能
+1. リポジトリの設定でGitHub Pagesを有効化
+2. ソースを「Deploy from a branch」に設定
+3. ブランチを「main」に設定
+4. 自動的にデプロイが実行される
 
-## 📄 ライセンス
+## 🔍 パフォーマンス最適化
 
-このプロジェクトはMITライセンスの下で公開されています。
+- **画像遅延読み込み**: `loading="lazy"`属性を使用
+- **キャッシュ**: 商品データを5分間キャッシュ
+- **デバウンス**: 検索入力のデバウンス処理
+- **フォールバック**: 画像読み込み失敗時の代替表示
+- **エラーハンドリング**: 堅牢なエラー処理
 
-## 👥 貢献
+## 🐛 トラブルシューティング
 
-プルリクエストやイシューの報告を歓迎します！
+### 画像が表示されない場合
 
-## 📞 お問い合わせ
+1. Google Driveの共有設定を確認
+2. ファイルIDが正しいか確認
+3. ブラウザのコンソールでエラーログを確認
+4. デバッグモードで画像URLテストを実行
 
-プロジェクトに関するご質問やご提案がございましたら、お気軽にお問い合わせください。
+### 商品データが読み込まれない場合
 
----
+1. Google Sheetsの公開設定を確認
+2. CSV URLが正しいか確認
+3. ネットワーク接続を確認
+4. ブラウザのコンソールでエラーログを確認
 
-**Pierrot** - 上質で洗練されたレディースファッションをお届けします ✨
+## 📝 ライセンス
+
+MIT License
+
+## 🤝 貢献
+
+プルリクエストやイシューの報告を歓迎します。
+
+## 📞 サポート
+
+問題が発生した場合は、GitHubのIssuesで報告してください。

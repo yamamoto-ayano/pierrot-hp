@@ -141,7 +141,11 @@ class ProductDisplay {
     // カテゴリ画像をレンダリング
     renderCategoryImage(product) {
         if (product && product.imageUrl) {
-            return `<img src="${product.imageUrl}" alt="${product.name || '商品画像'}" class="category-image" loading="lazy">`;
+            return `<img src="${product.imageUrl}" 
+                         alt="${product.name || '商品画像'}" 
+                         class="category-image" 
+                         loading="lazy"
+                         onerror="this.src='${CONFIG.FALLBACK_IMAGE_URL}'; this.onerror=null; console.warn('Failed to load image:', '${product.imageUrl}');">`;
         }
         return '<div class="no-image">画像なし</div>';
     }
@@ -187,7 +191,10 @@ class ProductDisplay {
                 <div class="product-detail">
                     ${product.imageUrl ? `
                         <div class="product-image">
-                            <img src="${product.imageUrl}" alt="${formattedProduct.displayName}" loading="lazy">
+                            <img src="${product.imageUrl}" 
+                                 alt="${formattedProduct.displayName}" 
+                                 loading="lazy"
+                                 onerror="this.src='${CONFIG.FALLBACK_IMAGE_URL}'; this.onerror=null; console.warn('Failed to load image:', '${product.imageUrl}');">
                         </div>
                     ` : ''}
                     <div class="product-info">

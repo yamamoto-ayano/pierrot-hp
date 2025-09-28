@@ -3,8 +3,14 @@ const CONFIG = {
     // Google Sheets設定
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
-    // Google Drive設定
-    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
+    // Google Drive設定（複数のURL形式を試す）
+    GOOGLE_DRIVE_URLS: [
+        'https://drive.google.com/uc?export=view&id=',  // 直接表示用
+        'https://drive.google.com/thumbnail?id=',       // サムネイル用
+        'https://drive.google.com/file/d/{ID}/preview'  // プレビュー用
+    ],
+    // 代替画像URL（画像が表示できない場合用）
+    FALLBACK_IMAGE_URL: 'https://via.placeholder.com/300x400?text=No+Image',
     
     // アプリケーション設定
     APP_NAME: 'Pierrot',
@@ -18,7 +24,7 @@ const CONFIG = {
     CACHE_DURATION: 5 * 60 * 1000, // 5分
     
     // デバッグ設定
-    DEBUG: false
+    DEBUG: true
 };
 
 // 環境変数から設定を読み込み（本番環境用）

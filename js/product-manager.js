@@ -103,7 +103,20 @@ class ProductManager {
 
     // Google Drive画像URLを生成
     getDriveImageUrl(fileId) {
-        return `${CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
+        if (!fileId || fileId.trim() === '') {
+            if (CONFIG.DEBUG) console.warn('Empty file ID provided');
+            return CONFIG.FALLBACK_IMAGE_URL;
+        }
+        
+        // 最初のURL形式を使用（最も確実な方法）
+        const imageUrl = `${CONFIG.GOOGLE_DRIVE_URLS[0]}${fileId}`;
+        if (CONFIG.DEBUG) console.log(`Generated image URL for file ID ${fileId}:`, imageUrl);
+        return imageUrl;
+    }
+    
+    // 代替画像URLを取得（画像読み込み失敗時用）
+    getFallbackImageUrl() {
+        return CONFIG.FALLBACK_IMAGE_URL;
     }
 
     // カテゴリ別に商品を取得

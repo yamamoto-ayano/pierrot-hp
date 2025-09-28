@@ -57,29 +57,77 @@
         <!-- 商品セクション -->
         <section id="products" class="products">
             <div class="container">
-                <h2 class="section-title">商品カタログ</h2>
-                
-                <!-- 商品フィルター -->
-                <div class="product-filters">
-                    <div class="search-box">
-                        <input type="text" id="product-search" placeholder="商品名で検索..." class="search-input">
-                        <button id="search-btn" class="search-btn">検索</button>
-                    </div>
-                    <div class="filter-controls">
-                        <select id="category-filter" class="category-select">
-                            <option value="all">全カテゴリ</option>
-                        </select>
-                        <select id="sort-select" class="sort-select">
-                            <option value="name-asc">名前順（昇順）</option>
-                            <option value="name-desc">名前順（降順）</option>
-                            <option value="price-asc">価格順（安い順）</option>
-                            <option value="price-desc">価格順（高い順）</option>
-                        </select>
+                <div class="products-header">
+                    <h2 class="section-title">商品一覧</h2>
+                    <div class="products-count">
+                        <span id="products-count">0件の商品</span>
                     </div>
                 </div>
                 
+                <!-- 商品フィルター・検索 -->
+                <div class="product-controls">
+                    <div class="search-section">
+                        <div class="search-box">
+                            <input type="text" id="product-search" placeholder="商品名・ブランドで検索..." class="search-input">
+                            <button id="search-btn" class="search-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label for="category-filter">カテゴリ</label>
+                            <select id="category-filter" class="filter-select">
+                                <option value="all">すべてのカテゴリ</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label for="sort-select">並び順</label>
+                            <select id="sort-select" class="filter-select">
+                                <option value="newest">新着順</option>
+                                <option value="name-asc">商品名（A-Z）</option>
+                                <option value="name-desc">商品名（Z-A）</option>
+                                <option value="price-asc">価格（安い順）</option>
+                                <option value="price-desc">価格（高い順）</option>
+                            </select>
+                        </div>
+                        
+                        <div class="view-controls">
+                            <button id="grid-view" class="view-btn active" title="グリッド表示">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="3" width="7" height="7"></rect>
+                                    <rect x="14" y="14" width="7" height="7"></rect>
+                                    <rect x="3" y="14" width="7" height="7"></rect>
+                                </svg>
+                            </button>
+                            <button id="list-view" class="view-btn" title="リスト表示">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 商品グリッド -->
                 <div id="product-grid" class="product-grid">
                     <!-- 商品は動的に読み込まれます -->
+                </div>
+                
+                <!-- ページネーション -->
+                <div id="pagination" class="pagination">
+                    <!-- ページネーションは動的に生成されます -->
                 </div>
             </div>
         </section>
@@ -167,26 +215,26 @@
             try {
                 // 商品を読み込み
                 await productManager.loadProducts();
-                
+
                 // 商品を表示
                 await productDisplay.displayProducts();
-                
+
                 // カテゴリフィルタを更新
                 updateCategoryFilter();
-                
+
                 // イベントリスナーを設定
-                setupEventListeners();
-                
+                productDisplay.setupEventListeners();
+
             } catch (error) {
                 console.error('初期化エラー:', error);
             }
         });
-        
+
         // カテゴリフィルタを更新
         function updateCategoryFilter() {
             const categorySelect = document.getElementById('category-filter');
             if (!categorySelect) return;
-            
+
             const categories = productManager.getAllCategories();
             categories.forEach(category => {
                 const option = document.createElement('option');
@@ -194,47 +242,6 @@
                 option.textContent = productManager.getCategoryDisplayName(category);
                 categorySelect.appendChild(option);
             });
-        }
-        
-        // イベントリスナーを設定
-        function setupEventListeners() {
-            // 検索ボタン
-            const searchBtn = document.getElementById('search-btn');
-            const searchInput = document.getElementById('product-search');
-            
-            if (searchBtn) {
-                searchBtn.addEventListener('click', () => {
-                    const query = searchInput.value.trim();
-                    productDisplay.search(query);
-                });
-            }
-            
-            // 検索入力（Enterキー）
-            if (searchInput) {
-                searchInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        const query = searchInput.value.trim();
-                        productDisplay.search(query);
-                    }
-                });
-            }
-            
-            // カテゴリフィルタ
-            const categoryFilter = document.getElementById('category-filter');
-            if (categoryFilter) {
-                categoryFilter.addEventListener('change', (e) => {
-                    productDisplay.filterByCategory(e.target.value);
-                });
-            }
-            
-            // ソート
-            const sortSelect = document.getElementById('sort-select');
-            if (sortSelect) {
-                sortSelect.addEventListener('change', (e) => {
-                    const [sortBy, sortOrder] = e.target.value.split('-');
-                    productDisplay.sort(sortBy, sortOrder);
-                });
-            }
         }
     </script>
 </body>

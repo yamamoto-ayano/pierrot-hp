@@ -4,8 +4,11 @@ class ProductDisplay {
         this.currentPage = 1;
         this.currentCategory = 'all';
         this.searchQuery = '';
-        this.sortBy = 'name';
-        this.sortOrder = 'asc';
+        this.sortBy = 'newest';
+        this.sortOrder = 'desc';
+        this.viewMode = 'grid'; // 'grid' or 'list'
+        this.productsPerPage = 12;
+        this.filteredProducts = [];
     }
 
     // 商品一覧を表示
@@ -15,15 +18,16 @@ class ProductDisplay {
             await productManager.loadProducts();
             
             // フィルタリングされた商品を取得
-            let products = this.getFilteredProducts();
+            this.filteredProducts = this.getFilteredProducts();
             
             // ソート
-            products = this.sortProducts(products);
+            this.filteredProducts = this.sortProducts(this.filteredProducts);
             
             // 表示
-            this.renderProductGrid(products);
+            this.renderProductGrid();
             this.updatePagination();
             this.updateCategoryFilter();
+            this.updateProductsCount();
             
         } catch (error) {
             console.error('Error displaying products:', error);
@@ -80,25 +84,27 @@ class ProductDisplay {
     }
 
     // 商品グリッドをレンダリング
-    renderProductGrid(products) {
+    renderProductGrid() {
         const container = document.getElementById('product-grid');
         if (!container) return;
 
-        // ローディング表示
-        container.innerHTML = '<div class="loading">商品を読み込み中...</div>';
+        // ページネーション適用
+        const startIndex = (this.currentPage - 1) * this.productsPerPage;
+        const endIndex = startIndex + this.productsPerPage;
+        const productsToShow = this.filteredProducts.slice(startIndex, endIndex);
 
-        if (products.length === 0) {
+        if (this.filteredProducts.length === 0) {
             container.innerHTML = '<div class="no-products">商品が見つかりませんでした</div>';
             return;
         }
 
-        // 商品カテゴリごとにグループ化
-        const groupedProducts = this.groupProductsByCategory(products);
-        
+        // ビューモードに応じてクラスを設定
+        container.className = `product-grid ${this.viewMode === 'list' ? 'list-view' : ''}`;
+
+        // 商品カードを生成
         let html = '';
-        Object.keys(groupedProducts).forEach(category => {
-            const categoryProducts = groupedProducts[category];
-            html += this.renderCategorySection(category, categoryProducts);
+        productsToShow.forEach(product => {
+            html += this.createProductCard(product);
         });
 
         container.innerHTML = html;
@@ -107,16 +113,102 @@ class ProductDisplay {
         this.attachProductEvents();
     }
 
-    // 商品をカテゴリごとにグループ化
-    groupProductsByCategory(products) {
-        const grouped = {};
-        products.forEach(product => {
-            if (!grouped[product.category]) {
-                grouped[product.category] = [];
+    // 商品カードを作成
+    createProductCard(product) {
+        const imageUrl = product.imageUrl || window.CONFIG.FALLBACK_IMAGE_URL;
+        const categoryName = productManager.getCategoryDisplayName(product.category);
+        const price = product.price ? `¥${product.price.toLocaleString()}` : '価格未定';
+        
+        return `
+            <div class="product-card ${this.viewMode === 'list' ? 'list-view' : ''}" data-sku="${product.sku}">
+                <div class="product-image-wrapper">
+                    <img src="${imageUrl}" 
+                         alt="${product.name}" 
+                         class="product-card-image"
+                         loading="lazy"
+                         onerror="this.src='${window.CONFIG.FALLBACK_IMAGE_URL}'; this.onerror=null;">
+                </div>
+                <div class="product-card-content">
+                    <h3 class="product-card-title">${product.name}</h3>
+                    <p class="product-card-category">${categoryName}</p>
+                    <p class="product-card-price">${price}</p>
+                    <button class="btn-detail" data-sku="${product.sku}">詳細を見る</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // 商品数を更新
+    updateProductsCount() {
+        const countElement = document.getElementById('products-count');
+        if (countElement) {
+            countElement.textContent = `${this.filteredProducts.length}件の商品`;
+        }
+    }
+
+    // ビューモードを切り替え
+    setViewMode(mode) {
+        this.viewMode = mode;
+        this.renderProductGrid();
+        this.updateViewButtons();
+    }
+
+    // ビューボタンの状態を更新
+    updateViewButtons() {
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        
+        if (gridBtn && listBtn) {
+            gridBtn.classList.toggle('active', this.viewMode === 'grid');
+            listBtn.classList.toggle('active', this.viewMode === 'list');
+        }
+    }
+
+    // ページネーションを更新
+    updatePagination() {
+        const container = document.getElementById('pagination');
+        if (!container) return;
+
+        const totalPages = Math.ceil(this.filteredProducts.length / this.productsPerPage);
+        
+        if (totalPages <= 1) {
+            container.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+        
+        // 前のページボタン
+        html += `<button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}">前へ</button>`;
+        
+        // ページ番号
+        const startPage = Math.max(1, this.currentPage - 2);
+        const endPage = Math.min(totalPages, this.currentPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            html += `<button class="pagination-btn ${i === this.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+        
+        // 次のページボタン
+        html += `<button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}">次へ</button>`;
+        
+        // ページ情報
+        html += `<span class="pagination-info">${this.currentPage} / ${totalPages} ページ</span>`;
+        
+        container.innerHTML = html;
+        
+        // イベントリスナーを追加
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('pagination-btn') && !e.target.disabled) {
+                const page = parseInt(e.target.dataset.page);
+                if (page && page !== this.currentPage) {
+                    this.currentPage = page;
+                    this.renderProductGrid();
+                    this.updatePagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }
-            grouped[product.category].push(product);
         });
-        return grouped;
     }
 
     // カテゴリセクションをレンダリング
@@ -381,6 +473,70 @@ class ProductDisplay {
         this.sortBy = by;
         this.sortOrder = order;
         this.displayProducts();
+    }
+
+    // イベントリスナーを設定
+    setupEventListeners() {
+        // 検索ボタン
+        const searchBtn = document.getElementById('search-btn');
+        const searchInput = document.getElementById('product-search');
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                this.searchQuery = searchInput.value.trim();
+                this.currentPage = 1;
+                this.displayProducts();
+            });
+        }
+        
+        // 検索入力（Enterキー）
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    this.searchQuery = searchInput.value.trim();
+                    this.currentPage = 1;
+                    this.displayProducts();
+                }
+            });
+        }
+        
+        // カテゴリフィルタ
+        const categoryFilter = document.getElementById('category-filter');
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', (e) => {
+                this.currentCategory = e.target.value;
+                this.currentPage = 1;
+                this.displayProducts();
+            });
+        }
+        
+        // ソート
+        const sortSelect = document.getElementById('sort-select');
+        if (sortSelect) {
+            sortSelect.addEventListener('change', (e) => {
+                const [sortBy, sortOrder] = e.target.value.split('-');
+                this.sortBy = sortBy;
+                this.sortOrder = sortOrder || 'asc';
+                this.currentPage = 1;
+                this.displayProducts();
+            });
+        }
+        
+        // ビューモード切り替え
+        const gridBtn = document.getElementById('grid-view');
+        const listBtn = document.getElementById('list-view');
+        
+        if (gridBtn) {
+            gridBtn.addEventListener('click', () => {
+                this.setViewMode('grid');
+            });
+        }
+        
+        if (listBtn) {
+            listBtn.addEventListener('click', () => {
+                this.setViewMode('list');
+            });
+        }
     }
 }
 

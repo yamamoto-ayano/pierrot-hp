@@ -114,7 +114,11 @@ class ProductManager {
                        'https://drive.usercontent.google.com/download?id=';
         
         const imageUrl = `${baseUrl}${fileId}`;
-        if (window.CONFIG.DEBUG) console.log(`Generated image URL for file ID ${fileId}:`, imageUrl);
+        if (window.CONFIG.DEBUG) {
+            console.log(`Generated image URL for file ID ${fileId}:`, imageUrl);
+            console.log(`Base URL used:`, baseUrl);
+            console.log(`File ID:`, fileId);
+        }
         return imageUrl;
     }
 

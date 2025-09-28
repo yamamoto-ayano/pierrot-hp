@@ -550,6 +550,7 @@ class ProductDisplay {
 window.tryNextImage = function(img) {
     const fallbackUrls = img.dataset.fallbackUrls;
     if (!fallbackUrls) {
+        if (window.CONFIG.DEBUG) console.warn('No fallback URLs found, using fallback image');
         img.src = window.CONFIG.FALLBACK_IMAGE_URL;
         return;
     }
@@ -559,18 +560,43 @@ window.tryNextImage = function(img) {
         const currentIndex = img.dataset.currentUrlIndex || 0;
         const nextIndex = parseInt(currentIndex) + 1;
         
+        if (window.CONFIG.DEBUG) {
+            console.log(`Image load failed, trying next URL (${nextIndex + 1}/${urls.length})`);
+            console.log(`Current failed URL:`, img.src);
+        }
+        
         if (nextIndex < urls.length) {
             img.dataset.currentUrlIndex = nextIndex;
             img.src = urls[nextIndex];
-            if (window.CONFIG.DEBUG) console.log(`Trying next image URL (${nextIndex + 1}/${urls.length}):`, urls[nextIndex]);
+            if (window.CONFIG.DEBUG) console.log(`Trying next image URL:`, urls[nextIndex]);
         } else {
             img.src = window.CONFIG.FALLBACK_IMAGE_URL;
-            if (window.CONFIG.DEBUG) console.log('All image URLs failed, using fallback');
+            if (window.CONFIG.DEBUG) console.log('All image URLs failed, using fallback image');
         }
     } catch (error) {
         console.error('Error parsing fallback URLs:', error);
         img.src = window.CONFIG.FALLBACK_IMAGE_URL;
     }
+};
+
+// 画像URLテスト関数（デバッグ用）
+window.testImageUrl = function(fileId) {
+    if (!fileId) {
+        console.error('File ID is required');
+        return;
+    }
+    
+    const urls = productManager.getAllImageUrls(fileId);
+    console.log(`Testing image URLs for file ID: ${fileId}`);
+    urls.forEach((url, index) => {
+        console.log(`${index + 1}. ${url}`);
+        
+        // 画像の読み込みテスト
+        const img = new Image();
+        img.onload = () => console.log(`✅ URL ${index + 1} works: ${url}`);
+        img.onerror = () => console.log(`❌ URL ${index + 1} failed: ${url}`);
+        img.src = url;
+    });
 };
 
 // グローバルインスタンス

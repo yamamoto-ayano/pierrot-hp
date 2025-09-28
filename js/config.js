@@ -4,12 +4,13 @@ window.CONFIG = window.CONFIG || {
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
     // Google Drive設定
-    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
+    GOOGLE_DRIVE_BASE_URL: 'https://drive.usercontent.google.com/download?id=',
     // 複数のURL形式を試す（将来の拡張用）
     GOOGLE_DRIVE_URLS: [
-        'https://drive.google.com/uc?export=view&id=',  // 直接表示用
-        'https://drive.google.com/thumbnail?id=',       // サムネイル用
-        'https://drive.google.com/file/d/{ID}/preview'  // プレビュー用
+        'https://drive.usercontent.google.com/download?id=',  // 直接ダウンロード用（推奨）
+        'https://drive.google.com/uc?export=view&id=',        // 直接表示用
+        'https://drive.google.com/thumbnail?id=',             // サムネイル用
+        'https://drive.google.com/file/d/{ID}/preview'        // プレビュー用
     ],
     // 代替画像URL（画像が表示できない場合用）
     FALLBACK_IMAGE_URL: 'https://via.placeholder.com/300x400?text=No+Image',

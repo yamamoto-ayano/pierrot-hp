@@ -119,6 +119,11 @@ class ProductDisplay {
         const categoryName = productManager.getCategoryDisplayName(product.category);
         const price = product.price ? `¥${product.price.toLocaleString()}` : '価格未定';
         
+        // 複数のURL形式を取得
+        const allImageUrls = product.image_file_ids ? 
+            productManager.getAllImageUrls(product.image_file_ids) : 
+            [window.CONFIG.FALLBACK_IMAGE_URL];
+        
         return `
             <div class="product-card ${this.viewMode === 'list' ? 'list-view' : ''}" data-sku="${product.sku}">
                 <div class="product-image-wrapper">
@@ -126,7 +131,8 @@ class ProductDisplay {
                          alt="${product.name}" 
                          class="product-card-image"
                          loading="lazy"
-                         onerror="this.src='${window.CONFIG.FALLBACK_IMAGE_URL}'; this.onerror=null;">
+                         data-fallback-urls='${JSON.stringify(allImageUrls)}'
+                         onerror="this.onerror=null; this.tryNextImage(this);">
                 </div>
                 <div class="product-card-content">
                     <h3 class="product-card-title">${product.name}</h3>
@@ -539,6 +545,33 @@ class ProductDisplay {
         }
     }
 }
+
+// 画像読み込み失敗時に複数のURL形式を試す関数
+window.tryNextImage = function(img) {
+    const fallbackUrls = img.dataset.fallbackUrls;
+    if (!fallbackUrls) {
+        img.src = window.CONFIG.FALLBACK_IMAGE_URL;
+        return;
+    }
+    
+    try {
+        const urls = JSON.parse(fallbackUrls);
+        const currentIndex = img.dataset.currentUrlIndex || 0;
+        const nextIndex = parseInt(currentIndex) + 1;
+        
+        if (nextIndex < urls.length) {
+            img.dataset.currentUrlIndex = nextIndex;
+            img.src = urls[nextIndex];
+            if (window.CONFIG.DEBUG) console.log(`Trying next image URL (${nextIndex + 1}/${urls.length}):`, urls[nextIndex]);
+        } else {
+            img.src = window.CONFIG.FALLBACK_IMAGE_URL;
+            if (window.CONFIG.DEBUG) console.log('All image URLs failed, using fallback');
+        }
+    } catch (error) {
+        console.error('Error parsing fallback URLs:', error);
+        img.src = window.CONFIG.FALLBACK_IMAGE_URL;
+    }
+};
 
 // グローバルインスタンス
 const productDisplay = new ProductDisplay();

@@ -103,7 +103,47 @@ class ProductManager {
 
     // Google Drive画像URLを生成
     getDriveImageUrl(fileId) {
-        return `${window.CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
+        if (!fileId || fileId.trim() === '') {
+            if (window.CONFIG.DEBUG) console.warn('Empty file ID provided');
+            return window.CONFIG.FALLBACK_IMAGE_URL;
+        }
+        
+        // 安全な方法でURLを生成
+        const baseUrl = window.CONFIG.GOOGLE_DRIVE_BASE_URL || 
+                       (window.CONFIG.GOOGLE_DRIVE_URLS && window.CONFIG.GOOGLE_DRIVE_URLS[0]) || 
+                       'https://drive.usercontent.google.com/download?id=';
+        
+        const imageUrl = `${baseUrl}${fileId}`;
+        if (window.CONFIG.DEBUG) console.log(`Generated image URL for file ID ${fileId}:`, imageUrl);
+        return imageUrl;
+    }
+
+    // 複数のURL形式を試して画像URLを取得
+    getAllImageUrls(fileId) {
+        if (!fileId || fileId.trim() === '') {
+            return [window.CONFIG.FALLBACK_IMAGE_URL];
+        }
+        
+        const urls = [];
+        
+        // 設定されたURL形式を全て試す
+        if (window.CONFIG.GOOGLE_DRIVE_URLS && window.CONFIG.GOOGLE_DRIVE_URLS.length > 0) {
+            window.CONFIG.GOOGLE_DRIVE_URLS.forEach(urlTemplate => {
+                if (urlTemplate.includes('{ID}')) {
+                    urls.push(urlTemplate.replace('{ID}', fileId));
+                } else {
+                    urls.push(`${urlTemplate}${fileId}`);
+                }
+            });
+        } else {
+            // フォールバック
+            urls.push(`${window.CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`);
+        }
+        
+        // フォールバック画像を最後に追加
+        urls.push(window.CONFIG.FALLBACK_IMAGE_URL);
+        
+        return urls;
     }
 
     // カテゴリ別に商品を取得

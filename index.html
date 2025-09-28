@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 設定ファイル -->
+    <script src="config.js"></script>
 </head>
 <body>
     <!-- ヘッダー -->
@@ -55,226 +58,28 @@
         <section id="products" class="products">
             <div class="container">
                 <h2 class="section-title">商品カタログ</h2>
-                <div class="product-grid">
-                    <!-- 商品カテゴリ A -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ A</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_005.png" alt="Product category A" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1a</span>
-                            <span class="product-number">2a</span>
-                            <span class="product-number">3a</span>
-                            <span class="product-number">4a</span>
-                            <span class="product-number">5a</span>
-                            <span class="product-number">6a</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">7a</span>
-                            <span class="product-number">8a</span>
-                            <span class="product-number">9a</span>
-                            <span class="product-number">10c</span>
-                            <span class="product-number">11a</span>
-                            <span class="product-number">12a</span>
-                        </div>
+                
+                <!-- 商品フィルター -->
+                <div class="product-filters">
+                    <div class="search-box">
+                        <input type="text" id="product-search" placeholder="商品名で検索..." class="search-input">
+                        <button id="search-btn" class="search-btn">検索</button>
                     </div>
-
-                    <!-- 商品カテゴリ B -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ B</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_008.png" alt="Product category B" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">13a</span>
-                            <span class="product-number">14a</span>
-                            <span class="product-number">15a</span>
-                            <span class="product-number">16a</span>
-                            <span class="product-number">17a</span>
-                            <span class="product-number">18a</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">19a</span>
-                            <span class="product-number">20a</span>
-                            <span class="product-number">21a</span>
-                            <span class="product-number">22a</span>
-                            <span class="product-number">23a</span>
-                            <span class="product-number">24a</span>
-                        </div>
+                    <div class="filter-controls">
+                        <select id="category-filter" class="category-select">
+                            <option value="all">全カテゴリ</option>
+                        </select>
+                        <select id="sort-select" class="sort-select">
+                            <option value="name-asc">名前順（昇順）</option>
+                            <option value="name-desc">名前順（降順）</option>
+                            <option value="price-asc">価格順（安い順）</option>
+                            <option value="price-desc">価格順（高い順）</option>
+                        </select>
                     </div>
-
-                    <!-- 商品カテゴリ C -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ C</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_011.png" alt="Product category C" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">25a</span>
-                            <span class="product-number">26a</span>
-                            <span class="product-number">27a</span>
-                            <span class="product-number">28a</span>
-                            <span class="product-number">29a</span>
-                            <span class="product-number">30a</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">31a</span>
-                            <span class="product-number">32a</span>
-                            <span class="product-number">33a</span>
-                            <span class="product-number">34a</span>
-                            <span class="product-number">35a</span>
-                            <span class="product-number">36a</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ D -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ D</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_014.png" alt="Product category D" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">37a</span>
-                            <span class="product-number">38a</span>
-                            <span class="product-number">39a</span>
-                            <span class="product-number">40a</span>
-                            <span class="product-number">41a</span>
-                            <span class="product-number">42a</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">43a</span>
-                            <span class="product-number">44a</span>
-                            <span class="product-number">45a</span>
-                            <span class="product-number">46a</span>
-                            <span class="product-number">47a</span>
-                            <span class="product-number">48a</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ E -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ E</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_017.jpg" alt="Product category E" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">49a</span>
-                            <span class="product-number">50a</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ F -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ F</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_020.png" alt="Product category F" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1b</span>
-                            <span class="product-number">2b</span>
-                            <span class="product-number">3b</span>
-                            <span class="product-number">4b</span>
-                            <span class="product-number">5b</span>
-                            <span class="product-number">6b</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">7b</span>
-                            <span class="product-number">8b</span>
-                            <span class="product-number">9b</span>
-                            <span class="product-number">10b</span>
-                            <span class="product-number">11b</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ G -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ G</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_023.png" alt="Product category G" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1c</span>
-                            <span class="product-number">2c</span>
-                            <span class="product-number">3c</span>
-                            <span class="product-number">4c</span>
-                            <span class="product-number">5c</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">6c</span>
-                            <span class="product-number">7c</span>
-                            <span class="product-number">8c</span>
-                            <span class="product-number">9c</span>
-                            <span class="product-number">10c</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ H -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ H</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_026.png" alt="Product category H" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1d</span>
-                            <span class="product-number">2d</span>
-                            <span class="product-number">3d</span>
-                            <span class="product-number">4d</span>
-                            <span class="product-number">5d</span>
-                            <span class="product-number">6d</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">7d</span>
-                            <span class="product-number">8d</span>
-                            <span class="product-number">9d</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ I -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ I</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_029.jpg" alt="Product category I" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1e</span>
-                            <span class="product-number">2e</span>
-                            <span class="product-number">3e</span>
-                            <span class="product-number">4e</span>
-                            <span class="product-number">5e</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">6e</span>
-                            <span class="product-number">7e</span>
-                            <span class="product-number">8e</span>
-                            <span class="product-number">9e</span>
-                            <span class="product-number">10e</span>
-                        </div>
-                    </div>
-
-                    <!-- 商品カテゴリ J -->
-                    <div class="product-category">
-                        <h3 class="category-title">カテゴリ J</h3>
-                        <div class="product-images">
-                            <img src="調査票_files/Image_032.png" alt="Product category J" class="category-image">
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">1f</span>
-                            <span class="product-number">2f</span>
-                            <span class="product-number">3f</span>
-                            <span class="product-number">4f</span>
-                            <span class="product-number">5f</span>
-                            <span class="product-number">6f</span>
-                        </div>
-                        <div class="product-numbers">
-                            <span class="product-number">7f</span>
-                            <span class="product-number">8f</span>
-                            <span class="product-number">9f</span>
-                            <span class="product-number">10f</span>
-                            <span class="product-number">11f</span>
-                            <span class="product-number">12f</span>
-                        </div>
-                    </div>
+                </div>
+                
+                <div id="product-grid" class="product-grid">
+                    <!-- 商品は動的に読み込まれます -->
                 </div>
             </div>
         </section>
@@ -350,6 +155,87 @@
         </button>
     </div>
 
+    <!-- 商品管理スクリプト -->
+    <script src="product-manager.js"></script>
+    <script src="product-display.js"></script>
     <script src="js/script.js"></script>
+    
+    <!-- 初期化スクリプト -->
+    <script>
+        // ページ読み込み時に商品を表示
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // 商品を読み込み
+                await productManager.loadProducts();
+                
+                // 商品を表示
+                await productDisplay.displayProducts();
+                
+                // カテゴリフィルタを更新
+                updateCategoryFilter();
+                
+                // イベントリスナーを設定
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('初期化エラー:', error);
+            }
+        });
+        
+        // カテゴリフィルタを更新
+        function updateCategoryFilter() {
+            const categorySelect = document.getElementById('category-filter');
+            if (!categorySelect) return;
+            
+            const categories = productManager.getAllCategories();
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = productManager.getCategoryDisplayName(category);
+                categorySelect.appendChild(option);
+            });
+        }
+        
+        // イベントリスナーを設定
+        function setupEventListeners() {
+            // 検索ボタン
+            const searchBtn = document.getElementById('search-btn');
+            const searchInput = document.getElementById('product-search');
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    productDisplay.search(query);
+                });
+            }
+            
+            // 検索入力（Enterキー）
+            if (searchInput) {
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        productDisplay.search(query);
+                    }
+                });
+            }
+            
+            // カテゴリフィルタ
+            const categoryFilter = document.getElementById('category-filter');
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', (e) => {
+                    productDisplay.filterByCategory(e.target.value);
+                });
+            }
+            
+            // ソート
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    const [sortBy, sortOrder] = e.target.value.split('-');
+                    productDisplay.sort(sortBy, sortOrder);
+                });
+            }
+        }
+    </script>
 </body>
 </html>

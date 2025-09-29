@@ -117,12 +117,7 @@ class ProductDisplay {
     createProductCard(product) {
         const imageUrl = product.imageUrl || window.CONFIG.FALLBACK_IMAGE_URL;
         const categoryName = productManager.getCategoryDisplayName(product.category);
-        const price = product.price ? `¥${product.price.toLocaleString()}` : '価格未定';
-        
-        // 複数のURL形式を取得
-        const allImageUrls = product.image_file_ids ? 
-            productManager.getAllImageUrls(product.image_file_ids) : 
-            [window.CONFIG.FALLBACK_IMAGE_URL];
+        const price = Utils.formatPrice(product.price);
         
         return `
             <div class="product-card ${this.viewMode === 'list' ? 'list-view' : ''}" data-sku="${product.sku}">
@@ -131,8 +126,7 @@ class ProductDisplay {
                          alt="${product.name}" 
                          class="product-card-image"
                          loading="lazy"
-                         data-fallback-urls='${JSON.stringify(allImageUrls)}'
-                         onerror="this.onerror=null; window.tryNextImage(this);">
+                         onerror="this.onerror=null; this.src='${window.CONFIG.FALLBACK_IMAGE_URL}';">
                 </div>
                 <div class="product-card-content">
                     <h3 class="product-card-title">${product.name}</h3>
@@ -549,39 +543,6 @@ class ProductDisplay {
     }
 }
 
-// 画像読み込み失敗時に複数のURL形式を試す関数
-window.tryNextImage = function(img) {
-    const fallbackUrls = img.dataset.fallbackUrls;
-    if (!fallbackUrls) {
-        if (window.CONFIG.DEBUG) console.warn('No fallback URLs found, using fallback image');
-        img.src = window.CONFIG.FALLBACK_IMAGE_URL;
-        return;
-    }
-    
-    try {
-        const urls = JSON.parse(fallbackUrls);
-        const currentIndex = img.dataset.currentUrlIndex || 0;
-        const nextIndex = parseInt(currentIndex) + 1;
-        
-        if (window.CONFIG.DEBUG) {
-            console.log(`Image load failed, trying next URL (${nextIndex + 1}/${urls.length})`);
-            console.log(`Current failed URL:`, img.src);
-        }
-        
-        if (nextIndex < urls.length) {
-            img.dataset.currentUrlIndex = nextIndex;
-            img.src = urls[nextIndex];
-            if (window.CONFIG.DEBUG) console.log(`Trying next image URL:`, urls[nextIndex]);
-        } else {
-            img.src = window.CONFIG.FALLBACK_IMAGE_URL;
-            if (window.CONFIG.DEBUG) console.log('All image URLs failed, using fallback image');
-        }
-    } catch (error) {
-        console.error('Error parsing fallback URLs:', error);
-        img.src = window.CONFIG.FALLBACK_IMAGE_URL;
-    }
-};
-
 // 画像URLテスト関数（デバッグ用）
 window.testImageUrl = function(fileId) {
     if (!fileId) {
@@ -589,17 +550,14 @@ window.testImageUrl = function(fileId) {
         return;
     }
     
-    const urls = productManager.getAllImageUrls(fileId);
-    console.log(`Testing image URLs for file ID: ${fileId}`);
-    urls.forEach((url, index) => {
-        console.log(`${index + 1}. ${url}`);
-        
-        // 画像の読み込みテスト
-        const img = new Image();
-        img.onload = () => console.log(`✅ URL ${index + 1} works: ${url}`);
-        img.onerror = () => console.log(`❌ URL ${index + 1} failed: ${url}`);
-        img.src = url;
-    });
+    const url = productManager.getDriveImageUrl(fileId);
+    console.log(`Testing image URL for file ID: ${fileId}`);
+    console.log(`URL: ${url}`);
+    
+    const img = new Image();
+    img.onload = () => console.log(`✅ Image loaded successfully: ${url}`);
+    img.onerror = () => console.log(`❌ Image failed to load: ${url}`);
+    img.src = url;
 };
 
 // グローバルインスタンス

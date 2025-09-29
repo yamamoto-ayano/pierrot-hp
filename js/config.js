@@ -1,26 +1,14 @@
 /**
  * Pierrot ファッションショップ - 設定管理
- * 
- * このファイルはアプリケーション全体の設定を管理します。
- * 環境変数による設定の上書きに対応しています。
  */
-
-// デフォルト設定
 const DEFAULT_CONFIG = {
     // Google Sheets設定
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
-    // Google Drive設定
+    // Google Drive設定（成功したURL形式のみ使用）
     GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
-    GOOGLE_DRIVE_URLS: [
-        'https://drive.google.com/uc?export=view&id=',        // 直接表示用（推奨）
-        'https://drive.google.com/thumbnail?id=',             // サムネイル用
-        'https://drive.google.com/uc?id=',                    // 代替表示用
-        'https://drive.google.com/file/d/{ID}/preview',       // プレビュー用
-        'https://drive.usercontent.google.com/download?id='   // ダウンロード用
-    ],
     
-    // 代替画像URL（画像が表示できない場合用）
+    // 代替画像URL
     FALLBACK_IMAGE_URL: 'https://via.placeholder.com/300x400?text=No+Image',
     
     // アプリケーション設定
@@ -29,20 +17,19 @@ const DEFAULT_CONFIG = {
     
     // 商品表示設定
     PRODUCTS_PER_PAGE: 12,
-    IMAGE_QUALITY: 'high', // high, medium, low
     
-    // キャッシュ設定
-    CACHE_DURATION: 5 * 60 * 1000, // 5分
+    // キャッシュ設定（5分）
+    CACHE_DURATION: 5 * 60 * 1000,
     
-    // デバッグ設定（本番環境では false に設定）
+    // デバッグ設定
     DEBUG: false
 };
 
-// 環境変数から設定を読み込み
-function loadConfigFromEnv() {
+// 設定を初期化
+function initConfig() {
     const config = { ...DEFAULT_CONFIG };
     
-    // 環境変数が利用可能な場合（Node.js環境など）
+    // 環境変数から上書き
     if (typeof process !== 'undefined' && process.env) {
         config.GOOGLE_SHEETS_URL = process.env.GOOGLE_SHEETS_URL || config.GOOGLE_SHEETS_URL;
         config.GOOGLE_DRIVE_BASE_URL = process.env.GOOGLE_DRIVE_BASE_URL || config.GOOGLE_DRIVE_BASE_URL;
@@ -50,7 +37,7 @@ function loadConfigFromEnv() {
         config.DEBUG = process.env.DEBUG === 'true' || config.DEBUG;
     }
     
-    // ブラウザ環境での設定上書き（URLパラメータなど）
+    // URLパラメータでデバッグモード切り替え
     if (typeof window !== 'undefined') {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('debug')) {
@@ -62,9 +49,4 @@ function loadConfigFromEnv() {
 }
 
 // グローバル設定を初期化
-window.CONFIG = window.CONFIG || loadConfigFromEnv();
-
-// 後方互換性のため、CONFIGも定義
-if (typeof CONFIG === 'undefined') {
-    window.CONFIG = window.CONFIG;
-}
+window.CONFIG = window.CONFIG || initConfig();

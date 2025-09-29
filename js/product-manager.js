@@ -21,7 +21,6 @@ class ProductManager {
      */
     async loadProducts() {
         if (this.isLoading) {
-            window.errorHandler?.warn('PRODUCT_LOAD', 'Products are already being loaded');
             return this.products;
         }
 
@@ -29,42 +28,28 @@ class ProductManager {
         
         // キャッシュチェック
         if (this.isCacheValid(now)) {
-            window.errorHandler?.info('PRODUCT_LOAD', 'Using cached products');
             return this.products;
         }
 
         this.isLoading = true;
         
         try {
-            window.errorHandler?.info('PRODUCT_LOAD', 'Fetching products from Google Sheets...');
+            const response = await fetch(window.CONFIG.GOOGLE_SHEETS_URL);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             
-            const response = await this.fetchWithRetry(window.CONFIG.GOOGLE_SHEETS_URL);
             const csvText = await response.text();
             const products = this.parseCSV(csvText);
             
-            this.updateProductsData(products, now);
-            this.retryCount = 0; // 成功時はリトライカウンターをリセット
+            this.products = products;
+            this.categories = new Set(products.map(p => p.category));
+            this.lastFetch = now;
             
-            window.errorHandler?.info('PRODUCT_LOAD', `Successfully loaded ${products.length} products`);
             return products;
             
         } catch (error) {
-            window.errorHandler?.log('PRODUCT_LOAD', error, {
-                retryCount: this.retryCount,
-                maxRetries: this.maxRetries
-            });
-            
-            // リトライ可能な場合
-            if (this.retryCount < this.maxRetries) {
-                this.retryCount++;
-                const delay = Math.pow(2, this.retryCount) * 1000; // 指数バックオフ
-                
-                window.errorHandler?.info('PRODUCT_LOAD', `Retrying in ${delay}ms (attempt ${this.retryCount}/${this.maxRetries})`);
-                
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return this.loadProducts();
-            }
-            
+            window.errorHandler?.log('PRODUCT_LOAD', error);
             return [];
         } finally {
             this.isLoading = false;
@@ -79,32 +64,6 @@ class ProductManager {
     isCacheValid(now) {
         return (now - this.lastFetch < window.CONFIG.CACHE_DURATION) && 
                (this.products.length > 0);
-    }
-
-    /**
-     * リトライ機能付きのfetch
-     * @param {string} url - 取得するURL
-     * @returns {Promise<Response>} レスポンス
-     */
-    async fetchWithRetry(url) {
-        const response = await fetch(url);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
-        }
-        
-        return response;
-    }
-
-    /**
-     * 商品データを更新
-     * @param {Array} products - 新しい商品データ
-     * @param {number} timestamp - タイムスタンプ
-     */
-    updateProductsData(products, timestamp) {
-        this.products = products;
-        this.categories = new Set(products.map(p => p.category));
-        this.lastFetch = timestamp;
     }
 
     /**
@@ -125,48 +84,32 @@ class ProductManager {
                 const values = this.parseCSVLine(line);
                 if (values.length < headers.length) continue;
 
-                const product = this.createProductFromRow(headers, values);
-                if (product) {
-                    products.push(product);
+                const product = {};
+                headers.forEach((header, index) => {
+                    product[header] = values[index] ? values[index].trim() : '';
+                });
+
+                // 必須フィールドのチェック
+                if (!product.sku || !product.category) continue;
+
+                // 価格を数値に変換
+                if (product.price) {
+                    product.price = parseInt(product.price) || 0;
                 }
+
+                // 画像URLを生成
+                if (product.image_file_ids) {
+                    product.imageUrl = this.getDriveImageUrl(product.image_file_ids);
+                }
+
+                products.push(product);
             }
 
             return products;
         } catch (error) {
-            window.errorHandler?.log('CSV_PARSE', error, { csvText: csvText.substring(0, 200) });
+            window.errorHandler?.log('CSV_PARSE', error);
             return [];
         }
-    }
-
-    /**
-     * CSV行から商品オブジェクトを作成
-     * @param {Array} headers - ヘッダー配列
-     * @param {Array} values - 値配列
-     * @returns {Object|null} 商品オブジェクトまたはnull
-     */
-    createProductFromRow(headers, values) {
-        const product = {};
-        
-        headers.forEach((header, index) => {
-            product[header] = values[index] ? values[index].trim() : '';
-        });
-
-        // 必須フィールドのチェック
-        if (!product.sku || !product.category) {
-            return null;
-        }
-
-        // 価格を数値に変換
-        if (product.price) {
-            product.price = parseInt(product.price) || 0;
-        }
-
-        // 画像URLを生成
-        if (product.image_file_ids) {
-            product.imageUrl = this.getDriveImageUrl(product.image_file_ids);
-        }
-
-        return product;
     }
 
     /**
@@ -203,51 +146,10 @@ class ProductManager {
      */
     getDriveImageUrl(fileId) {
         if (!fileId || fileId.trim() === '') {
-            window.errorHandler?.warn('IMAGE_LOAD', 'Empty file ID provided');
             return window.CONFIG.FALLBACK_IMAGE_URL;
         }
         
-        const baseUrl = window.CONFIG.GOOGLE_DRIVE_BASE_URL || 
-                       (window.CONFIG.GOOGLE_DRIVE_URLS && window.CONFIG.GOOGLE_DRIVE_URLS[0]) || 
-                       'https://drive.google.com/uc?export=view&id=';
-        
-        const imageUrl = `${baseUrl}${fileId}`;
-        
-        window.errorHandler?.info('IMAGE_LOAD', `Generated image URL for file ID ${fileId}`, {
-            baseUrl,
-            fileId,
-            imageUrl
-        });
-        
-        return imageUrl;
-    }
-
-    /**
-     * 複数のURL形式を試して画像URLを取得
-     * @param {string} fileId - ファイルID
-     * @returns {Array} 画像URLの配列
-     */
-    getAllImageUrls(fileId) {
-        if (!fileId || fileId.trim() === '') {
-            return [window.CONFIG.FALLBACK_IMAGE_URL];
-        }
-        
-        const urls = [];
-        
-        if (window.CONFIG.GOOGLE_DRIVE_URLS && window.CONFIG.GOOGLE_DRIVE_URLS.length > 0) {
-            window.CONFIG.GOOGLE_DRIVE_URLS.forEach(urlTemplate => {
-                if (urlTemplate.includes('{ID}')) {
-                    urls.push(urlTemplate.replace('{ID}', fileId));
-                } else {
-                    urls.push(`${urlTemplate}${fileId}`);
-                }
-            });
-        } else {
-            urls.push(`${window.CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`);
-        }
-        
-        urls.push(window.CONFIG.FALLBACK_IMAGE_URL);
-        return urls;
+        return `${window.CONFIG.GOOGLE_DRIVE_BASE_URL}${fileId}`;
     }
 
     /**
@@ -325,20 +227,6 @@ class ProductManager {
         return this.products.length;
     }
 
-    /**
-     * 商品を表示用にフォーマット
-     * @param {Object} product - 商品オブジェクト
-     * @returns {Object} フォーマットされた商品オブジェクト
-     */
-    formatProductForDisplay(product) {
-        return {
-            ...product,
-            displayPrice: Utils.formatPrice(product.price),
-            displayName: product.name || '商品名未定',
-            hasImage: !!product.image_file_ids,
-            categoryDisplay: this.getCategoryDisplayName(product.category)
-        };
-    }
 
     /**
      * カテゴリの表示名を取得
@@ -361,23 +249,6 @@ class ProductManager {
         return categoryNames[category] || `カテゴリ ${category}`;
     }
 
-    /**
-     * キャッシュをクリア
-     */
-    clearCache() {
-        this.cache.clear();
-        this.lastFetch = 0;
-        this.products = [];
-        this.categories.clear();
-    }
-
-    /**
-     * ローディング状態を取得
-     * @returns {boolean} ローディング中の場合true
-     */
-    isLoading() {
-        return this.isLoading;
-    }
 }
 
 // グローバルインスタンス

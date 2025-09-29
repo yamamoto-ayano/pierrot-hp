@@ -6,7 +6,7 @@ const DEFAULT_CONFIG = {
     GOOGLE_SHEETS_URL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWEfEH0eOxllBLT0rFbvTXC8aUE_Xgi0NtBmW_sp9gqSyGmCAsXttFQ2EHQULlQckiZKv42mFBTvVs/pub?output=csv',
     
     // Google Drive設定（成功したURL形式のみ使用）
-    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/uc?export=view&id=',
+    GOOGLE_DRIVE_BASE_URL: 'https://drive.google.com/thumbnail?id=',       
     
     // 代替画像URL
     FALLBACK_IMAGE_URL: 'https://via.placeholder.com/300x400?text=No+Image',

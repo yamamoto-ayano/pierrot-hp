@@ -7,7 +7,7 @@ class ProductDisplay {
         this.sortBy = 'newest';
         this.sortOrder = 'desc';
         this.viewMode = 'grid'; // 'grid' or 'list'
-        this.productsPerPage = 12;
+        this.productsPerPage = 9999; // 表示制限なし（全商品表示）
         this.filteredProducts = [];
     }
 
@@ -169,46 +169,9 @@ class ProductDisplay {
         const container = document.getElementById('pagination');
         if (!container) return;
 
-        const totalPages = Math.ceil(this.filteredProducts.length / this.productsPerPage);
-        
-        if (totalPages <= 1) {
-            container.innerHTML = '';
-            return;
-        }
-
-        let html = '';
-        
-        // 前のページボタン
-        html += `<button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} data-page="${this.currentPage - 1}">前へ</button>`;
-        
-        // ページ番号
-        const startPage = Math.max(1, this.currentPage - 2);
-        const endPage = Math.min(totalPages, this.currentPage + 2);
-        
-        for (let i = startPage; i <= endPage; i++) {
-            html += `<button class="pagination-btn ${i === this.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
-        }
-        
-        // 次のページボタン
-        html += `<button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} data-page="${this.currentPage + 1}">次へ</button>`;
-        
-        // ページ情報
-        html += `<span class="pagination-info">${this.currentPage} / ${totalPages} ページ</span>`;
-        
-        container.innerHTML = html;
-        
-        // イベントリスナーを追加
-        container.addEventListener('click', (e) => {
-            if (e.target.classList.contains('pagination-btn') && !e.target.disabled) {
-                const page = parseInt(e.target.dataset.page);
-                if (page && page !== this.currentPage) {
-                    this.currentPage = page;
-                    this.renderProductGrid();
-                    this.updatePagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            }
-        });
+        // 表示制限なしのため、ページネーションを非表示
+        container.innerHTML = '';
+        return;
     }
 
     // カテゴリセクションをレンダリング

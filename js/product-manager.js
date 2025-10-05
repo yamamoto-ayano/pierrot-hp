@@ -235,12 +235,12 @@ class ProductManager {
      */
     getCategoryDisplayName(category) {
         const categoryNames = {
-            'A': 'カテゴリ A',
-            'B': 'カテゴリ B',
-            'C': 'カテゴリ C',
-            'D': 'カテゴリ D',
-            'E': 'カテゴリ E',
-            'F': 'カテゴリ F',
+            'A': 'トップス',
+            'B': 'アウター',
+            'C': 'セットアップ・ワンピース',
+            'D': 'スカート',
+            'E': 'ボトムス',
+            'F': 'アクセサリー',
             'G': 'カテゴリ G',
             'H': 'カテゴリ H',
             'I': 'カテゴリ I',
